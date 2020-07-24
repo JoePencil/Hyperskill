@@ -1,54 +1,65 @@
 import random
 from string import ascii_lowercase
 
-WORD_LIST = 'python', 'java', 'kotlin', 'javascript'
-answer = random.choice(WORD_LIST)
+class HangmanGame:
+    WORD_LIST = 'python', 'java', 'kotlin', 'javascript'
 
-lives = 8
+    def __init__(self):
+        self.good_guessed, self.bad_guessed = str(), str()
+        self.answer = random.choice(HangmanGame.WORD_LIST)
+        self.lives = 8
+    
+    def start(self):
+        print('\nH A N G M A N')
 
-good_guessed, bad_guessed = str(), str()
+        while True:
+            command = ''
+            while command != 'play':
+                command = input(
+                    'Type "play" to play the game, "exit" to quit: '
+                )
+                if command == 'exit':
+                    exit()
 
-print('\nH A N G M A N')
+            while self.lives and set(self.good_guessed) != set(self.answer):
+                print()
+                for c in self.answer:
+                    if c not in self.good_guessed:
+                        print('-', end='')
+                    else:
+                        print(c, end='')
+                print()
 
-# game loop
-while True:
-    command = ''
-    while command != 'play':
-        command = input('Type "play" to play the game, "exit" to quit: ')
-        if command == 'exit':
-            exit()
+                guessing = input("Input a letter: ")
 
-    while lives and set(good_guessed) != set(answer):
+                # bad input
+                if len(guessing) != 1:
+                    print('You should input a single letter')
+                elif guessing not in ascii_lowercase:
+                    print('It is not an ASCII lowercase letter')
+                # bad guessing
+                elif guessing in self.good_guessed \
+                    or guessing in self.bad_guessed \
+                :
+                    print('You already typed this letter')
+                elif guessing not in self.answer:
+                    print('No such letter in the word')
+                    self.bad_guessed += guessing
+                    self.lives -= 1
+                # good guess
+                else:
+                    self.good_guessed += guessing
 
-        print()
-        for c in answer:
-            if c not in good_guessed:
-                print('-', end='')
+            if not self.lives:
+                print('You are hanged!')
             else:
-                print(c, end='')
-        print()
+                print(f'\n{self.answer}')
+                print('You guessed the word!')
+                print('You survived!\n')
 
-        guessing = input("Input a letter: ")
+def main():
+    hangman = HangmanGame()
+    hangman.start()
 
-        # bad input
-        if len(guessing) != 1:
-            print('You should input a single letter')
-        elif guessing not in ascii_lowercase:
-            print('It is not an ASCII lowercase letter')
-        # bad guessing
-        elif guessing in good_guessed or guessing in bad_guessed:
-            print('You already typed this letter')
-        elif guessing not in answer:
-            print('No such letter in the word')
-            bad_guessed += guessing
-            lives -= 1
-        # good guess
-        else:
-            good_guessed += guessing
-
-    if not lives:
-        print('You are hanged!')
-    else:
-        print(f'\n{answer}')
-        print('You guessed the word!')
-        print('You survived!\n')
+if __name__ == "__main__":
+    main()
